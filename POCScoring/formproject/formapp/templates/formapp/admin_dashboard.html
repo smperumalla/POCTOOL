@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Administrator Dashboard</title>
+    <!-- styles as before -->
+</head>
+<body>
+    <h1>Welcome, {{ admin_name }}!</h1>
+    <div class="quick-access">
+        <a href="{% url 'admin_employee_management' %}">Manage Employees</a>
+        <a href="{% url 'form_creation' %}">Create Form</a>
+    </div>
+    <div id="form-list">
+        <h2>Existing Forms:</h2>
+        {% for form in forms %}
+        <div class="form-entry">
+            <a href="{% url 'form_detail' form.id %}">{{ form.title }}</a>
+            <a href="{% url 'form_assignment' form.id %}">Assign Form</a>
+            <a href="{% url 'form_assignment_list' form.id %}">View Assignments</a>
+            <a href="{% url 'delete_form' form.id %}">Delete Form</a>
+
+
+        </div>
+    {% empty %}
+        <p>No forms available</p>
+    {% endfor %}
+    
+    </div>
+    <div id="completed-form-list">
+        <h2>Completed Forms:</h2>
+        {% for form in completed_forms %}
+            <div class="form-entry">
+                <p><a href="{% url 'assignment_detail' form.assignment_id %}">Form Title: {{ form.form_title }}</a></p>
+                <p>Completed by: {{ form.employee_name }}</p>
+            </div>
+        {% empty %}
+            <p>No forms have been completed yet.</p>
+        {% endfor %}
+    </div>    
+    <div id="visualizations">
+        <h2>Data Visualizations:</h2>
+        <!-- Placeholder for visualization -->
+        <div id="visualization-1" class="visualization">
+            <p style="text-align:center; padding-top:180px;">Placeholder for Visualization 1</p>
+        </div>
+        <!-- Add as many placeholders as you need -->
+    </div>
+</body>
+</html>

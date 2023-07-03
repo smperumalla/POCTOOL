@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Admin Form Detail</title>
+    <!-- styles as before -->
+</head>
+<body>
+    <h1>{{ form.title }}</h1>
+    <form id="form-detail" method="post">
+        {% csrf_token %}
+        <h2>Update Form</h2>
+        {% for question in form.questions %}
+            <label for="{{ question.id }}">{{ question.title }}</label>
+            <input type="text" id="{{ question.id }}" name="{{ question.id }}" value="{{ question.content }}" required>
+        {% endfor %}
+        <input type="submit" value="Update">
+    </form>
+    <button id="delete-form" data-form-id="{{ form.id }}">Delete Form</button>
+    <!-- Add your scripts here -->
+</body>
+</html>
