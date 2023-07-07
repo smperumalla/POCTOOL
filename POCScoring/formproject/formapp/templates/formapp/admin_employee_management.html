@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Employee Management</title>
+    <!-- styles as before -->
+</head>
+<body>
+    <h1>Welcome, {{ admin_name }}!</h1>
+    <form id="create-employee" method="post">
+        {% csrf_token %}
+        <h2>Add New Employee</h2>
+        <label for="username">Employee Username</label>
+        <input type="text" id="username" name="username" required>
+        <label for="password">Employee Password</label>
+        <input type="password" id="password" name="password" required>
+        <input type="submit" value="Add">
+    </form>
+    <div id="employee-list">
+        <h2>Existing Employees:</h2>
+        {% for employee in employees %}
+            <a href="{% url 'employee_view' employee.id %}">{{ employee.user.username }}</a>
+        {% empty %}
+            <p>No employees added yet</p>
+        {% endfor %}
+    </div>
+</body>
+</html>

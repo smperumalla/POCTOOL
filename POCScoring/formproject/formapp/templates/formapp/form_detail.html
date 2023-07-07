@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <label for="form_name">Form Name:</label>
+        <input id="form_name" type="text" name="form_name" value="{{ form.name }}">
+
+        {% for section in sections %}
+            <label for="section_{{ section.id }}">Section Title:</label>
+            <input id="section_{{ section.id }}" type="text" name="section_{{ section.id }}" value="{{ section.title }}">
+
+            {% for subsection in section.subsection_set.all %}
+                <label for="subsection_{{ subsection.id }}">Subsection Title:</label>
+                <input id="subsection_{{ subsection.id }}" type="text" name="subsection_{{ subsection.id }}" value="{{ subsection.title }}">
+
+                {% for question in subsection.question_set.all %}
+                    <label for="question_{{ question.id }}">Question:</label>
+                    <input id="question_{{ question.id }}" type="text" name="question_{{ question.id }}" value="{{ question.text }}">
+                {% endfor %}
+            {% endfor %}
+        {% endfor %}
+
+        <button type="submit">Save changes</button>
+    </form>
+{% endblock %}

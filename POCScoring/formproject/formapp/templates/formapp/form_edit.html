@@ -1,0 +1,46 @@
+{% load static %}
+
+{% block content %}
+    <form method="POST">
+        {% csrf_token %}
+        <div>
+            <label for="form_name">Form Name:</label>
+            <input id="form_name" type="text" name="form_name" value="{{ form.title }}">
+        </div>
+
+        <div id="sections">
+            {% for section in sections %}
+                <div class="section">
+                    <label for="section_{{ section.id }}">Section Title:</label>
+                    <input id="section_{{ section.id }}" type="text" name="section_{{ section.id }}" value="{{ section.title }}">
+                    
+                    <div class="subsections">
+                        {% for subsection in section.subsection_set.all %}
+                            <div class="subsection">
+                                <label for="subsection_{{ subsection.id }}">Subsection Title:</label>
+                                <input id="subsection_{{ subsection.id }}" type="text" name="subsection_{{ subsection.id }}" value="{{ subsection.title }}">
+                                
+                                <div class="questions">
+                                    {% for question in subsection.question_set.all %}
+                                        <div class="question">
+                                            <label for="question_{{ question.id }}">Question:</label>
+                                            <input id="question_{{ question.id }}" type="text" name="question_{{ question.id }}" value="{{ question.text }}">
+                                        </div>
+                                    {% endfor %}
+                                    <button type="button" class="add-question">Add Question</button>
+                                </div>
+                            </div>
+                        {% endfor %}
+                        <button type="button" class="add-subsection">Add Subsection</button>
+                    </div>
+                </div>
+                <button type="button" class="add-section">Add Section</button>
+            {% endfor %}
+        </div>
+
+        <button type="submit">Save changes</button>
+    </form>
+{% endblock %}
+{% block javascript %}
+    <script src="{% static 'formapp/form_edit.js' %}"></script>
+{% endblock %}

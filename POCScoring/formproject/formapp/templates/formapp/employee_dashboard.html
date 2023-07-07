@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <title>Employee Dashboard</title>
+    <!-- Will Possibly include Bootstrap CSS for better styling -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.0/css/bootstrap.min.css">
+</head>
+<body class="p-3">
+    <h1 class="mb-4">Welcome, {{ employee_name }}!</h1>
+    
+    <!-- Display assigned forms -->
+    <div>
+        <div>
+            <h2>Your Assigned Forms:</h2>
+            <div class="list-group mb-4">
+                {% for form_assignment in form_assignments %}
+                    <a href="{% url 'form_completion' form_assignment.id %}" class="list-group-item list-group-item-action">
+                        Form Assignment ID: {{ form_assignment.id }} <br/>
+                        Form Title: {{ form_assignment.form.title }} <br/>
+                        Employee: {{ form_assignment.employee.user.username }}
+                    </a>
+                {% empty %}
+                    <div class="list-group-item">No forms assigned yet</div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Display completed forms -->
+    <div>
+        <h2>Your Completed Forms:</h2>
+        <div class="list-group">
+            {% for form_assignment in completed_form_assignments %}
+                <a href="{% url 'form_view' form_assignment.form.id %}" class="list-group-item list-group-item-action">
+                    {{ form_assignment.form.title }}
+                </a>
+            {% empty %}
+                <div class="list-group-item">No forms completed yet</div>
+            {% endfor %}
+        </div>
+    </div>
+</body>
+</html>

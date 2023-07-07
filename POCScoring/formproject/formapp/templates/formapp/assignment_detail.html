@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Assignment Detail</title>
+</head>
+<body>
+    <h1>{{ assignment.form.title }}</h1>
+    <h2>Completed by: {{ assignment.employee.user.username }}</h2>
+
+    {% for section in assignment.form.section_set.all %}
+        <h2>{{ section.title }}</h2>
+        {% for subsection in section.subsection_set.all %}
+            <h3>{{ subsection.title }}</h3>
+            {% for question_response in question_responses %}
+                {% if question_response.question.subsection == subsection %}
+                    <ul>
+                        <li>
+                            <strong>Question:</strong> {{ question_response.question.text }}<br>
+                            {% if question_response.response.score %}
+                                <strong>Score:</strong> {{ question_response.response.score }}
+                            {% endif %}
+                        </li>
+                    </ul>
+                {% endif %}
+            {% endfor %}
+        {% endfor %}
+    {% endfor %}
+</body>
+</html>
