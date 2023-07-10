@@ -19,6 +19,39 @@ from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 import os
 from django.contrib import messages
+from django.core.mail import send_mail
+
+
+@require_POST
+def employee_delete(request, employee_id):
+    employee = get_object_or_404(Employee, id=employee_id)
+    employee.delete()
+    return redirect('admin_employee_management')
+
+def send_assignment_email(form, employee):
+    # employee's email will be fetched here. I'm just using a placeholder.
+    employee_email = employee.user.email
+
+    send_mail(
+        'New Form Assignment',
+        f'You have been assigned a new form: {form.title}. Please login to your dashboard to access it.',
+        'smperumalla@sonicwall.com',  # This is the sender
+        [employee_email],  # This is the receiver
+    )
+
+@csrf_exempt
+def send_email_view(request, assignment_id):
+    if request.method == 'POST':
+        try:
+            assignment = FormAssignment.objects.get(id=assignment_id)
+            send_assignment_email(assignment.form, assignment.employee)
+            return JsonResponse({'status': 'success'}, status=200)
+        except FormAssignment.DoesNotExist:
+            return JsonResponse({'error': 'Assignment not found'}, status=404)
+        except Exception as e:
+            return JsonResponse({'error': str(e)}, status=500)
+    else:
+        return JsonResponse({'error': 'Invalid request'}, status=400)
 
 
 def delete_form(request, form_id):
@@ -220,6 +253,17 @@ def form_assignment(request, form_id=None):
     if form_id is not None:
         form = get_object_or_404(Form, id=form_id)
         if request.method == 'POST':
+            # Check if 'send_email' button was pressed
+            if 'send_email' in request.POST:
+                employee_id = request.POST['send_email']
+                try:
+                    employee = Employee.objects.get(id=employee_id)
+                    send_assignment_email(form, employee)
+                    return redirect('admin_dashboard')
+                except Employee.DoesNotExist:
+                    return HttpResponse("Invalid employee id provided", status=400)
+                
+            # If not, process form assignment as before
             employee_ids = request.POST.getlist('employees')
             employees = Employee.objects.filter(id__in=employee_ids)
             if employees:
@@ -373,16 +417,23 @@ def employee_view(request, employee_id):
     forms = employee.form_set.all()  # Fetches all forms associated with this employee
     return render(request, 'formapp/employee_view.html', {'employee': employee, 'forms': forms})
 
+from django.db import IntegrityError
+
 def employee_manage(request):
+    user = request.user
+    employee, created = Employee.objects.get_or_create(user=user)
+
     if request.method == 'POST':
         employee_id = request.POST.get('employee_id')
         new_username = request.POST.get('username')
         new_password = request.POST.get('password')
+        new_email = request.POST.get('email')
 
         # Check if creating a new employee or updating existing
         if employee_id:
             # Updating existing employee
             employee = get_object_or_404(Employee, id=employee_id)
+
             if new_username:
                 try:
                     employee.user.username = new_username
@@ -391,26 +442,34 @@ def employee_manage(request):
                     # Handle the case when username is not unique
                     # You can render the same page with error message.
                     return render(request, 'formapp/admin_employee_management.html', {'error': e.messages})
+
             if new_password:
                 employee.user.set_password(new_password)  # Hashes the password
+            if new_email:
+                employee.user.email = new_email
+
             employee.user.save()
 
         else:
             # Creating new employee
             try:
                 user = User.objects.create_user(username=new_username, password=new_password)
-                employee = Employee.objects.create(user=user)
+                employee, created = Employee.objects.get_or_create(user=user)
             except ValidationError as e:
                 # Handle the case when username is not unique
                 # You can render the same page with error message.
                 return render(request, 'formapp/admin_employee_management.html', {'error': e.messages})
+            except IntegrityError:
+                # Handle the case when username already exists
+                return render(request, 'formapp/admin_employee_management.html', {'error': ['Username already exists']})
 
         return redirect('admin_dashboard')
 
     else:
         employees = Employee.objects.all()
         return render(request, 'formapp/admin_employee_management.html', {'employees': employees})
-    
+
+
 def form_score_view(request, form_id):
     form = get_object_or_404(Form, id=form_id)
     if request.method == 'GET':

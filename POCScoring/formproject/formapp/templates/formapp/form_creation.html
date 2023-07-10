@@ -3,43 +3,30 @@
 <html>
 <head>
     <title>Create a New Form</title>
-    <style>
-        body {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            font-family: Arial, sans-serif;
-        }
-        form {
-            border: 1px solid #000;
-            padding: 20px;
-            width: 300px;
-        }
-        input[type="submit"] {
-            margin-top: 20px;
-        }
-    </style>
+    <link rel="stylesheet" type="text/css" href="{% static 'formapp/form_creation.css' %}">
 </head>
 <body>
-    <form id="form-creation">
-        <h2>Create a New Form</h2>
-        <label for="form-title">Form Title:</label>
-        <input type="text" id="form-title" name="form-title" required>
-        <div id="sections-div">
-            <!-- Sections will be added here dynamically -->
-        </div>
-        <button id="add-section-button" type="button">Add Section</button>
-        <button id="save-draft-button" type="button">Save Draft</button>
-    </form>
+    <div id="form-create-wrapper">
+        <form id="form-creation">
+            <h2>Create a New Form</h2>
+            <label for="form-title">Form Title:</label>
+            <input type="text" id="form-title" name="form-title" required>
+            <div id="sections-div">
+                <!-- Sections will be added here dynamically -->
+            </div>
+            <button id="add-section-button" type="button">Add Section</button>
+            <button id="save-draft-button" type="button">Save Draft</button>
+        </form>
+    </div>
 
-    <!-- New section for Import Form from CSV -->
-    <h2>Import Form from CSV:</h2>
-    <form method="post" enctype="multipart/form-data" action="{% url 'import_form_from_excel' %}">
-        {% csrf_token %}
-        <input type="file" name="file" accept=".csv,.xlsx,.xls">
-        <input type="submit" value="Import">
-    </form>
+    <div id="form-csv-wrapper">
+        <form method="post" enctype="multipart/form-data" action="{% url 'import_form_from_excel' %}">
+            {% csrf_token %}
+            <h2>Import Form from CSV:</h2>
+            <input type="file" name="file" accept=".csv,.xlsx,.xls">
+            <input type="submit" value="Import">
+        </form>
+    </div>
 
     <script src="{% static 'formapp/form_creation.js' %}"></script>
 </body>

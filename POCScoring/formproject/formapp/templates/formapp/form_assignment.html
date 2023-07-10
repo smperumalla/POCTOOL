@@ -42,6 +42,8 @@
                 <div>
                     <input type="checkbox" name="employees" value="{{ employee.id }}" id="employee{{ employee.id }}">
                     <label for="employee{{ employee.id }}">{{ employee.user.username }}</label>
+                    <!-- Add send email button for each employee -->
+                    <button type="submit" name="send_email" value="{{ employee.id }}">Send Email</button>
                 </div>
             {% endfor %}
             <input type="submit" value="Assign">

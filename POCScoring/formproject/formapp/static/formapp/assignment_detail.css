@@ -1,0 +1,49 @@
+/* form_assignment_detail.css */
+
+body {
+    font-family: 'Open Sans', Arial, sans-serif;
+    background: linear-gradient(to right, #f4f4f4, #e8e8e8);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: #4CAF50;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+h1 {
+    font-size: 2em;
+}
+
+h2 {
+    font-size: 1.6em;
+    margin: 20px 0;
+}
+
+h3 {
+    font-size: 1.4em;
+    margin-bottom: 10px;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 20px;
+}
+
+li {
+    line-height: 1.6;
+}
+
+strong {
+    color: #2196F3;
+}

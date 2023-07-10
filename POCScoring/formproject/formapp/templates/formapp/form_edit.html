@@ -27,20 +27,22 @@
                                             <input id="question_{{ question.id }}" type="text" name="question_{{ question.id }}" value="{{ question.text }}">
                                         </div>
                                     {% endfor %}
-                                    <button type="button" class="add-question">Add Question</button>
                                 </div>
                             </div>
                         {% endfor %}
-                        <button type="button" class="add-subsection">Add Subsection</button>
                     </div>
                 </div>
-                <button type="button" class="add-section">Add Section</button>
             {% endfor %}
         </div>
 
         <button type="submit">Save changes</button>
+        <a href="{% url 'admin_dashboard' %}" role="button" class="btn btn-dashboard">Dashboard</a>
     </form>
 {% endblock %}
 {% block javascript %}
     <script src="{% static 'formapp/form_edit.js' %}"></script>
 {% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'formapp/form_edit.css' %}">
+{% endblock %}
+

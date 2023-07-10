@@ -1,6 +1,7 @@
 from django.urls import path
 from . import views  # import views from current directory
-from .views import form_submit
+from .views import form_submit,send_email_view,save_draft
+
 
 urlpatterns = [
     path('login/', views.login_view, name='employee_login'),
@@ -20,4 +21,6 @@ urlpatterns = [
     path('admin_dashboard/delete_form/<int:form_id>/', views.delete_form, name='delete_form'),
     path('import_form_from_excel/', views.import_form_from_excel, name='import_form_from_excel'),
     path('form_edit/<int:form_id>/', views.form_edit, name='form_edit'),
+    path('send_email/<int:assignment_id>/', send_email_view, name='send_email'),
+    path('employee/delete/<int:employee_id>', views.employee_delete, name='employee_delete'),
 ]

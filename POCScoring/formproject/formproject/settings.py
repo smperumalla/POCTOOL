@@ -122,3 +122,11 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.office365.com' # this is for Outlook, use 'smtp.gmail.com' for Gmail
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+EMAIL_HOST_USER = 'smperumalla@sonicwall.com' # your email
+EMAIL_HOST_PASSWORD = 'SNWL@Sp87769' # your email password
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER

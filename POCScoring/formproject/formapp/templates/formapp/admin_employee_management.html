@@ -12,6 +12,8 @@
         <h2>Add New Employee</h2>
         <label for="username">Employee Username</label>
         <input type="text" id="username" name="username" required>
+        <label for="email">Employee Email</label>   <!-- New email input field -->
+        <input type="email" id="email" name="email" required>  <!-- New email input field -->
         <label for="password">Employee Password</label>
         <input type="password" id="password" name="password" required>
         <input type="submit" value="Add">
@@ -19,7 +21,13 @@
     <div id="employee-list">
         <h2>Existing Employees:</h2>
         {% for employee in employees %}
-            <a href="{% url 'employee_view' employee.id %}">{{ employee.user.username }}</a>
+            <div>
+                <a href="{% url 'employee_view' employee.id %}">{{ employee.user.username }}</a>
+                <form action="{% url 'employee_delete' employee.id %}" method="POST" style="display: inline;">
+                    {% csrf_token %}
+                    <button type="submit">Delete</button>
+                </form>
+            </div>
         {% empty %}
             <p>No employees added yet</p>
         {% endfor %}
