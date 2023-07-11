@@ -15,12 +15,75 @@ from django.http import JsonResponse
 from django.urls import reverse
 import pandas as pd
 from openpyxl import load_workbook
+from openpyxl import Workbook
 from django.http import HttpResponseRedirect
 from django.utils.text import slugify
 import os
 from django.contrib import messages
 from django.core.mail import send_mail
+from decimal import Decimal
 
+def export_to_excel(request, form_id):
+    # create a new workbook
+    wb = Workbook()
+    # delete the default sheet created
+    wb.remove(wb.active)
+
+    form = get_object_or_404(Form, id=form_id)
+    forms = [form]
+
+    # populate the workbook
+    for form in forms:
+        # Create a worksheet for each form
+        ws = wb.create_sheet(title=form.title)
+
+        # Fetch all form assignments for the current form
+        assignments = FormAssignment.objects.filter(form=form)
+
+        # Create list to store all employees
+        employees = []
+
+        for assignment in assignments:
+            employees.append(assignment.employee.user.username)
+
+        # Write the employee names as headers in the excel sheet
+        ws.append(['', '', '', ''] + employees)  # leave first 4 cells empty for employee names
+
+        # Now fetch all sections in the form
+        sections = Section.objects.filter(form=form).order_by('order')
+
+        for section in sections:
+            ws.append([section.title])
+
+            # Fetch all subsections in the current section
+            subsections = Subsection.objects.filter(section=section).order_by('order')
+
+            for subsection in subsections:
+                ws.append([f'    {subsection.title}'])  # 4 space indent for subsections
+
+                # Fetch all questions in the current subsection
+                questions = Question.objects.filter(subsection=subsection).order_by('order')
+
+                for question in questions:
+                    row = [f'        {question.text}']  # 8 space indent for questions
+
+                    # Append the responses of each employee to the current question
+                    scores = []
+                    for employee in employees:
+                        try:
+                            response = Response.objects.get(assignment__employee__user__username=employee, question=question)
+                            scores.append(response.score)
+                        except Response.DoesNotExist:
+                            scores.append('')  # Leave empty if no response
+
+                    ws.append(row + [''] * 3 + scores)  # Add empty cells before the scores
+
+    # create a response
+    response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+    response['Content-Disposition'] = f'attachment; filename={form.title}.xlsx'
+    wb.save(response)
+
+    return response
 
 @require_POST
 def employee_delete(request, employee_id):
@@ -541,6 +604,14 @@ def import_form_from_excel(request, form_id=None):
 
 
 
+import logging
+from decimal import Decimal
+from django.shortcuts import get_object_or_404, render
+from django.contrib import messages
+from .models import Form, Section, Subsection, Question
+
+logger = logging.getLogger(__name__)  # get a logger for this module
+
 def form_edit(request, form_id):
     form = get_object_or_404(Form, id=form_id)
 
@@ -549,39 +620,59 @@ def form_edit(request, form_id):
             form.title = request.POST.get('form_name', form.title)
             form.save()
 
-            # update existing sections, subsections, and questions
+            # update existing sections, subsections, questions and weights
             for key, value in request.POST.items():
                 if key.startswith('section_') and not key.startswith('new_section_'):
                     id = key.split('_')[1]
                     section = get_object_or_404(Section, id=id, form=form)
                     section.title = value
+                    weight = Decimal(request.POST.get('section_weight_' + id, section.weight))
+                    logger.info(f'Updating section {id} weight: {weight}')
+                    section.weight = weight
                     section.save()
                 elif key.startswith('subsection_') and not key.startswith('new_subsection_'):
                     id = key.split('_')[1]
                     subsection = get_object_or_404(Subsection, id=id, section__form=form)
                     subsection.title = value
+                    weight = Decimal(request.POST.get('subsection_weight_' + id, subsection.weight))
+                    logger.info(f'Updating subsection {id} weight: {weight}')
+                    subsection.weight = weight
                     subsection.save()
                 elif key.startswith('question_') and not key.startswith('new_question_'):
                     id = key.split('_')[1]
                     question = get_object_or_404(Question, id=id, subsection__section__form=form)
                     question.text = value
+                    weight = Decimal(request.POST.get('question_weight_' + id, question.weight))
+                    logger.info(f'Updating question {id} weight: {weight}')
+                    question.weight = weight
                     question.save()
-
-            # create new sections, subsections, and questions
+            # create new sections, subsections, questions and weights
             for key, value in request.POST.items():
                 if key.startswith('new_section_'):
-                    Section.objects.create(title=value, form=form)
+                    section = Section.objects.create(title=value, form=form)
+                    weight = Decimal(request.POST.get('new_section_weight_' + str(section.id), '0.0'))
+                    logger.info(f'Creating new section {section.id} with weight: {weight}')
+                    section.weight = weight
+                    section.save()
                 elif key.startswith('new_subsection_'):
                     id = key.split('_')[2]
                     section = get_object_or_404(Section, id=id, form=form)
-                    Subsection.objects.create(title=value, section=section)
+                    subsection = Subsection.objects.create(title=value, section=section)
+                    weight = Decimal(request.POST.get('new_subsection_weight_' + str(subsection.id), '0.0'))
+                    logger.info(f'Creating new subsection {subsection.id} with weight: {weight}')
+                    subsection.weight = weight
+                    subsection.save()
                 elif key.startswith('new_question_'):
                     id = key.split('_')[2]
                     subsection = get_object_or_404(Subsection, id=id, section__form=form)
-                    Question.objects.create(text=value, subsection=subsection)
-
+                    question = Question.objects.create(text=value, subsection=subsection)
+                    weight = Decimal(request.POST.get('new_question_weight_' + str(question.id), '0.0'))
+                    logger.info(f'Creating new question {question.id} with weight: {weight}')
+                    question.weight = weight
+                    question.save()
             messages.success(request, 'Form updated successfully')
         except Exception as e:
+            logger.exception('Error updating form')
             messages.error(request, f'Error updating form: {str(e)}')
 
     sections = form.section_set.all()

@@ -11,6 +11,9 @@ https://docs.djangoproject.com/en/4.2/ref/settings/
 """
 
 from pathlib import Path
+import os
+import logging.config
+
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -130,3 +133,21 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'smperumalla@sonicwall.com' # your email
 EMAIL_HOST_PASSWORD = 'SNWL@Sp87769' # your email password
 DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+#...
+
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+        },
+    },
+    'root': {
+        'handlers': ['console'],
+        'level': 'INFO',
+    }
+}
+
+logging.config.dictConfig(LOGGING)

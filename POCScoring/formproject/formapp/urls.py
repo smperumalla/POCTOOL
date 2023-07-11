@@ -23,4 +23,7 @@ urlpatterns = [
     path('form_edit/<int:form_id>/', views.form_edit, name='form_edit'),
     path('send_email/<int:assignment_id>/', send_email_view, name='send_email'),
     path('employee/delete/<int:employee_id>', views.employee_delete, name='employee_delete'),
+    path('admin_dashboard/export_form/<int:form_id>/', views.export_to_excel, name='export_form_to_excel'),
+
+
 ]
