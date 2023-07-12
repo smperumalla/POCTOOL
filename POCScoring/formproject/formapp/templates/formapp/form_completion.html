@@ -1,33 +1,42 @@
-<!DOCTYPE html>
 {% load static %}
-<html>
-<head>
-    <title>Form Completion</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/form_completion.css' %}">
-</head>
-<body>
-    <form id="completion-form" method="post">
+{% block content %}
+    <form method="POST" id="completion-form">
         {% csrf_token %}
-        <h2>{{ assignment.form.title }}</h2>
-        <!-- Loop through each section -->
-        {% for section in sections %}
-            <h3>{{ section.title }}</h3>
-            <!-- Loop through each subsection in the section -->
-            {% for subsection in section.subsection_set.all %}
-                <h4>{{ subsection.title }}</h4>
-                <!-- Loop through each question in the subsection -->
-                {% for question in subsection.question_set.all %}
-                    <label for="question-{{ question.id }}">{{ question.text }}</label>
-                    <input type="number" id="question-{{ question.id }}" name="question-{{ question.id }}" min="0" max="5" required>
+        <div class="form-group">
+            <label for="form_name">{{ assignment.form.title }}</label>
+        </div>
+
+        <table id="sections" class="table table-striped">
+            {% for section in sections %}
+                <tr class="section">
+                    <td colspan="2">{{ section.title }}</td>
+                </tr>
+                {% for subsection in section.subsection_set.all %}
+                    <tr class="subsection">
+                        <td style="padding-left: 30px;">{{ subsection.title }}</td>
+                        <td></td>
+                    </tr>
+                    {% for question in subsection.question_set.all %}
+                        <tr class="question">
+                            <td style="padding-left: 60px;">{{ question.text }}</td>
+                            <td>
+                                <input type="number" id="question-{{ question.id }}" name="question-{{ question.id }}" min="0" max="5" required class="form-control">
+                            </td>
+                        </tr>
+                    {% endfor %}
                 {% endfor %}
             {% endfor %}
-        {% endfor %}
-        <input type="submit" value="Submit">
+        </table>
+
+        <button type="submit" class="btn btn-primary">Submit</button>
+        <a href="{% url 'employee_dashboard' %}" role="button" class="btn btn-dashboard btn-secondary">Dashboard</a>
     </form>
+{% endblock %}
+{% block javascript %}
     <script>
         document.getElementById('completion-form').addEventListener('submit', function(event) {
             event.preventDefault();
-    
+
             var formData = {};
             {% for section in sections %}
                 {% for subsection in section.subsection_set.all %}
@@ -38,8 +47,7 @@
             {% endfor %}
             console.log(formData);
             var jsonData = JSON.stringify(formData);
-            console.log(jsonData);  // For debugging purpose, you should see this on browser console
-    
+
             fetch("{% url 'form_completion' assignment.id %}", {
                 method: 'POST',
                 headers: {
@@ -49,12 +57,14 @@
                 body: jsonData
             }).then(function(response) {
                 if(response.ok) {
-                    window.location.href = response.url;  // Redirect to the URL provided by the server
+                    window.location.href = response.url;
                 } else {
                     alert("Error: " + response.statusText);
                 }
             });
         });
     </script>
-</body>
-</html>
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'formapp/form_completion.css' %}">
+{% endblock %}

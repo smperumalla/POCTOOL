@@ -3,49 +3,42 @@
 {% block content %}
     <form method="POST">
         {% csrf_token %}
-        <div>
+        <div class="form-group">
             <label for="form_name">Form Name:</label>
-            <input id="form_name" type="text" name="form_name" value="{{ form.title }}">
+            <input id="form_name" type="text" name="form_name" value="{{ form.title }}" class="form-control">
         </div>
 
-        <div id="sections">
+        <table id="sections" class="table table-striped">
+            <tr>
+                <th colspan="2"></th>
+                <th>Weight</th>
+            </tr>
             {% for section in sections %}
-                <div class="section">
-                    <label for="section_{{ section.id }}">Section Title:</label>
-                    <input id="section_{{ section.id }}" type="text" name="section_{{ section.id }}" value="{{ section.title }}">
-                    
-                    <label for="section_weight_{{ section.id }}">Weight (%)</label>
-                    <input id="section_weight_{{ section.id }}" type="number" step="0.01" min="0" max="100" name="section_weight_{{ section.id }}" value="{{ section.weight }}">
-                    
-                    <div class="subsections">
-                        {% for subsection in section.subsection_set.all %}
-                            <div class="subsection">
-                                <label for="subsection_{{ subsection.id }}">Subsection Title:</label>
-                                <input id="subsection_{{ subsection.id }}" type="text" name="subsection_{{ subsection.id }}" value="{{ subsection.title }}">
+                <tr class="section">
+                    <td colspan="2"><input id="section_{{ section.id }}" type="text" name="section_{{ section.id }}" value="{{ section.title }}" class="form-control"></td>
+                    <td><input id="section_weight_{{ section.id }}" type="number" step="0.01" min="0" max="100" name="section_weight_{{ section.id }}" value="{{ section.weight }}" class="form-control"></td>
+                </tr>
 
-                                <label for="subsection_weight_{{ subsection.id }}">Weight (%)</label>
-                                <input id="subsection_weight_{{ subsection.id }}" type="number" step="0.01" min="0" max="100" name="subsection_weight_{{ subsection.id }}" value="{{ subsection.weight }}">
-                                
-                                <div class="questions">
-                                    {% for question in subsection.question_set.all %}
-                                        <div class="question">
-                                            <label for="question_{{ question.id }}">Question:</label>
-                                            <input id="question_{{ question.id }}" type="text" name="question_{{ question.id }}" value="{{ question.text }}">
-
-                                            <label for="question_weight_{{ question.id }}">Weight (%)</label>
-                                            <input id="question_weight_{{ question.id }}" type="number" step="0.01" min="0" max="100" name="question_weight_{{ question.id }}" value="{{ question.weight }}">
-                                        </div>
-                                    {% endfor %}
-                                </div>
-                            </div>
-                        {% endfor %}
-                    </div>
-                </div>
+                {% for subsection in section.subsection_set.all %}
+                    <tr class="subsection">
+                        <td></td>
+                        <td style="padding-left: 30px;"><input id="subsection_{{ subsection.id }}" type="text" name="subsection_{{ subsection.id }}" value="{{ subsection.title }}" class="form-control"></td>
+                        <td><input id="subsection_weight_{{ subsection.id }}" type="number" step="0.01" min="0" max="100" name="subsection_weight_{{ subsection.id }}" value="{{ subsection.weight }}" class="form-control"></td>
+                    </tr>
+                    
+                    {% for question in subsection.question_set.all %}
+                        <tr class="question">
+                            <td></td>
+                            <td style="padding-left: 60px;"><input id="question_{{ question.id }}" type="text" name="question_{{ question.id }}" value="{{ question.text }}" class="form-control"></td>
+                            <td><input id="question_weight_{{ question.id }}" type="number" step="0.01" min="0" max="100" name="question_weight_{{ question.id }}" value="{{ question.weight }}" class="form-control"></td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
             {% endfor %}
-        </div>
+        </table>
 
-        <button type="submit">Save changes</button>
-        <a href="{% url 'admin_dashboard' %}" role="button" class="btn btn-dashboard">Dashboard</a>
+        <button type="submit" class="btn btn-primary">Save changes</button>
+        <a href="{% url 'admin_dashboard' %}" role="button" class="btn btn-dashboard btn-secondary">Dashboard</a>
     </form>
 {% endblock %}
 {% block javascript %}

@@ -6,36 +6,78 @@ body {
 }
 
 form {
-    max-width: 800px;
+    max-width: 900px;
     margin: 30px auto;
     padding: 20px;
     background-color: white;
     border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: all 0.3s ease;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
-label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-    color: #333;
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+th {
+    text-align: right;
+    padding: 10px;
+    color: #4CAF50;
+    font-weight: normal;
+}
+
+td {
+    padding: 10px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s ease;
+}
+
+.section td {
+    background-color: #f8f8f8;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05) inset;
+}
+
+.section:hover td {
+    background-color: #e7e7e7;
+}
+
+.subsection td {
+    background-color: #f0f0f0;
+    padding-left: 40px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05) inset;
+}
+
+.subsection:hover td {
+    background-color: #e0e0e0;
+}
+
+.question td {
+    background-color: #fafafa;
+    padding-left: 70px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.05) inset;
+}
+
+.question:hover td {
+    background-color: #f0f0f0;
 }
 
 input[type="number"] {
-    width: 100%;
+    width: 80%;
     padding: 10px;
     border: 1px solid #ddd;
     border-radius: 4px;
-    font-size: 1em;
-    transition: border 0.3s ease;
+    font-size: 1.2em;
+    transition: box-shadow 0.3s ease;
+    box-sizing: border-box;
 }
 
 input[type="number"]:hover, input[type="number"]:focus {
-    border: 1px solid #4CAF50;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
 }
 
 input[type="submit"] {
+    display: block;
+    margin: 20px 0;
     background-color: #4CAF50;
     color: white;
     padding: 10px 20px;
@@ -48,48 +90,4 @@ input[type="submit"] {
 
 input[type="submit"]:hover {
     background-color: #45a049;
-}
-
-.section {
-    border-left: 4px solid #4CAF50;
-    background-color: #f8f8f8;
-    padding: 20px;
-    border-radius: 4px;
-    margin-top: 20px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-}
-
-.section:hover {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-}
-
-.subsection {
-    border-left: 4px solid #2196F3;
-    background-color: #f0f0f0;
-    margin-left: 30px;
-    padding: 20px;
-    border-radius: 4px;
-    margin-top: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-}
-
-.subsection:hover {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-}
-
-.question {
-    border-left: 4px solid #f44336;
-    background-color: #fafafa;
-    margin-left: 30px;
-    padding: 20px;
-    border-radius: 4px;
-    margin-top: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-    transition: box-shadow 0.3s ease;
-}
-
-.question:hover {
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
 }

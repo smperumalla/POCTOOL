@@ -1,32 +1,40 @@
-<!DOCTYPE html>
 {% load static %}
-<html>
-<head>
-    <title>Assignment Detail</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'formapp/assignment_detail.css' %}">
+{% block content %}
+    <div class="container">
+        <h1 class="my-4">{{ assignment.form.title }}</h1>
+        <h2 class="mb-4">Completed by: {{ assignment.employee.user.username }}</h2>
 
-</head>
-<body>
-    <h1>{{ assignment.form.title }}</h1>
-    <h2>Completed by: {{ assignment.employee.user.username }}</h2>
+        <table id="sections" class="table table-striped">
+            {% for section in assignment.form.section_set.all %}
+                <tr class="section">
+                    <td colspan="2">{{ section.title }}</td>
+                </tr>
 
-    {% for section in assignment.form.section_set.all %}
-        <h2>{{ section.title }}</h2>
-        {% for subsection in section.subsection_set.all %}
-            <h3>{{ subsection.title }}</h3>
-            {% for question_response in question_responses %}
-                {% if question_response.question.subsection == subsection %}
-                    <ul>
-                        <li>
-                            <strong>Question:</strong> {{ question_response.question.text }}<br>
-                            {% if question_response.response.score %}
-                                <strong>Score:</strong> {{ question_response.response.score }}
-                            {% endif %}
-                        </li>
-                    </ul>
-                {% endif %}
+                {% for subsection in section.subsection_set.all %}
+                    <tr class="subsection">
+                        <td style="padding-left: 30px;">{{ subsection.title }}</td>
+                        <td></td>
+                    </tr>
+
+                    {% for question_response in question_responses %}
+                        {% if question_response.question.subsection == subsection %}
+                            <tr class="question">
+                                <td style="padding-left: 60px;"><strong>Question:</strong> {{ question_response.question.text }}</td>
+                                <td>
+                                    {% if question_response.response.score %}
+                                        <strong>Score:</strong> {{ question_response.response.score }}
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endif %}
+                    {% endfor %}
+                {% endfor %}
             {% endfor %}
-        {% endfor %}
-    {% endfor %}
-</body>
-</html>
+        </table>
+
+        <a href="{% url 'admin_dashboard' %}" role="button" class="btn btn-dashboard btn-secondary">Dashboard</a>
+    </div>
+{% endblock %}
+{% block css %}
+    <link rel="stylesheet" href="{% static 'formapp/assignment_detail.css' %}">
+{% endblock %}
